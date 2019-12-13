@@ -1,16 +1,21 @@
 package com.example.not_a_keylogger;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Button;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<String> buttonRecords = new ArrayList<String>();
 
     private List<String> accelerometerRecords= new ArrayList<String>();
+
+    private String comment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,21 +82,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     {
         bpause.setVisibility(View.INVISIBLE);
         bplay.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
         sensorManager.unregisterListener(this);
 
+        addComment();
 
-            Long tsLong = System.currentTimeMillis();
-            String path = String.valueOf(this.getFilesDir());
-            Log.i("path : ",path);
 
-            final File file = new File(path, String.valueOf(tsLong)+".txt");
 
-            try
-            {
-                file.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(file);
-                OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+    }
+
+    public void save(){
+        Long tsLong = System.currentTimeMillis();
+        String path = String.valueOf(this.getExternalFilesDir("Records"));
+        Log.i("path : ",path);
+
+        final File file = new File(path, String.valueOf(tsLong)+".txt");
+
+        try
+        {
+            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
 
             for (int i=0; i<accelerometerRecords.size(); i++) {
                 myOutWriter.append("accelerometerRecord,"+accelerometerRecords.get(i)+"\n");
@@ -99,19 +111,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             for (int i=0; i<buttonRecords.size(); i++) {
                 myOutWriter.append("buttonRecord,"+buttonRecords.get(i)+"\n" );
             }
-                myOutWriter.close();
+            myOutWriter.append("comment : "+comment);
+            myOutWriter.close();
 
-                fOut.flush();
-                fOut.close();
-            }
-            catch (IOException e)
-            {
-                Log.e("Exception", "File write failed: " + e.toString());
-            }
+            fOut.flush();
+            fOut.close();
+            Toast.makeText(this, "saved at : "+path, Toast.LENGTH_LONG).show();
+
+        }
+
+        catch (IOException e)
+        {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
 
     }
-
-
     public void buttonClicked(View v){
             Button b = (Button)v;
             String buttonText = b.getText().toString();
@@ -149,5 +163,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    public void addComment(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add comment");
+
+// Set up the input
+        final EditText input = new EditText(this);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT );
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                comment = input.getText().toString();
+                save();
+            }
+        });
+        builder.setNegativeButton("No comment", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                comment ="";
+                save();
+                dialog.cancel();
+
+            }
+        });
+
+        builder.show();
+    }
 
 }
