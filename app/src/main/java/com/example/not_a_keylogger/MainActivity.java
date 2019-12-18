@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<String> accelerometerRecords= new ArrayList<String>();
 
     private String comment;
+    private Sensor gyroscopeSensor;
+    private List<String> gyroscopeRecords = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 myOutWriter.append("accelerometerRecord,"+accelerometerRecords.get(i)+"\n");
             }
 
+            for (int i=0; i<gyroscopeRecords.size(); i++) {
+                myOutWriter.append("gyroscopeRecord,"+gyroscopeRecords.get(i)+"\n" );
+            }
 
             for (int i=0; i<buttonRecords.size(); i++) {
                 myOutWriter.append("buttonRecord,"+buttonRecords.get(i)+"\n" );
@@ -144,18 +149,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }else{
             Toast.makeText(this,"no accelerometer :/", Toast.LENGTH_LONG).show();
         }
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)!=null){
+            gyroscopeSensor =sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+            sensorManager.registerListener((SensorEventListener) this,gyroscopeSensor,SensorManager.SENSOR_DELAY_NORMAL);
+        }else{
+            Toast.makeText(this,"no gyroscope :/", Toast.LENGTH_LONG).show();
+
+        }
 
     }
 
 
     public void onSensorChanged(SensorEvent event) {
-        Toast.makeText(this,"event: ", Toast.LENGTH_LONG).show();
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             long tsLong = System.currentTimeMillis();
             accelerometerRecords.add(tsLong+","+ event.values[0]+","+event.values[1]+","+event.values[2]);
             Log.i("acce value : ",String.valueOf(accelerometerRecords.size()));
 
         }
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            long tsLong = System.currentTimeMillis();
+            gyroscopeRecords.add(tsLong+","+ event.values[0]+","+event.values[1]+","+event.values[2]);
+            Log.i("acce value : ",String.valueOf(gyroscopeRecords.size()));
+
+        }
+
     }
 
     @Override
