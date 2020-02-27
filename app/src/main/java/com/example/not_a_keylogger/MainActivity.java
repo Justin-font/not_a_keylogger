@@ -3,6 +3,7 @@ package com.example.not_a_keylogger;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -18,9 +19,13 @@ import android.os.Environment;
 import android.os.Trace;
 import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -36,7 +41,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     Button b1 ;
     Button b2 ;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Button b9 ;
     Button bplay ;
     Button bpause ;
+    private List<Button> Listbutton = new ArrayList<Button>();
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
@@ -66,12 +71,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float pitch;
     float roll;
     long id;
+    String[] speed_sensor = {"SENSOR_DELAY_FASTEST","SENSOR_DELAY_GAME","","SENSOR_DELAY_NORMAL","SENSOR_DELAY_UI"};
     String surface_type ="";
     String orientation_type="";
     Signature[] sigs;
     SharedPreferences sharedPreferences;
     String user_name;
     String ip="54.235.235.226";
+    int sensor_delay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
          bpause = (Button) findViewById(R.id.pause);
         bpause.setVisibility(View.INVISIBLE);
         bplay.setVisibility(View.VISIBLE);
+
         sharedPreferences = this.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         if (!sharedPreferences.contains("user_name")){
             setUserName();
@@ -100,10 +108,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (sharedPreferences.contains("ip")){
             ip = sharedPreferences.getString("ip","");
         }
+        Listbutton.add(b1);
+        Listbutton.add(b2);
+        Listbutton.add(b3);
+        Listbutton.add(b4);
+        Listbutton.add(b5);
+        Listbutton.add(b6);
+        Listbutton.add(b7);
+        Listbutton.add(b8);
+        Listbutton.add(b9);
+        set();
+        setDropDown();
 
     }
 
     public void play(View v) throws PackageManager.NameNotFoundException {
+        resetRecords();
         id = System.currentTimeMillis();
         bpause.setVisibility(View.VISIBLE);
         bplay.setVisibility(View.INVISIBLE);
@@ -146,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         json.put("user_name", user_name);
         json.put("surface", surface_type);
         json.put("orientation", orientation_type);
+        json.put("sensor_delay", speed_sensor[sensor_delay]);
+
         String jsonString = json.toString();
         new CallAPI().execute(jsonString,ip);
 
@@ -179,6 +201,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             myOutWriter.append("user_name : "+user_name);
             myOutWriter.append("surface : "+surface_type);
             myOutWriter.append("orientation : "+orientation_type);
+            myOutWriter.append("sensor_delay : "+speed_sensor[sensor_delay]);
+
             myOutWriter.close();
 
             fOut.flush();
@@ -193,27 +217,45 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
     }
-    public void buttonClicked(View v){
-            Button b = (Button)v;
-            String buttonText = b.getText().toString();
-            Long tsLong = System.currentTimeMillis();
-            buttonRecords.add(tsLong +"," +buttonText);
 
+public void set(){
+    for (int i=0; i<Listbutton.size(); i++) {
+        Listbutton.get(i).setOnTouchListener(new View.OnTouchListener()
+        {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                Button b = (Button)v;
+                String buttonText = b.getText().toString();
+                Long tsLong = System.currentTimeMillis();
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d("Pressed", "Button pressed"+buttonText);
+                    buttonRecords.add(tsLong +"," +buttonText);}
+                else if (event.getAction() == MotionEvent.ACTION_UP){
+                    Log.d("Released", "Button released"+buttonText);
+                    buttonRecords.add(tsLong +"," +buttonText);}
+                // TODO Auto-generated method stub
+                return false;
+            }
+        });
     }
 
+}
 
     public void record(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!=null){
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener((SensorEventListener) this,accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener((SensorEventListener) this,accelerometer,sensor_delay);
 
         }else{
             Toast.makeText(this,"no accelerometer :/", Toast.LENGTH_LONG).show();
         }
         if(sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)!=null){
             gyroscopeSensor =sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-            sensorManager.registerListener((SensorEventListener) this,gyroscopeSensor,SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener((SensorEventListener) this,gyroscopeSensor,sensor_delay);
+
         }else{
             Toast.makeText(this,"no gyroscope :/", Toast.LENGTH_LONG).show();
 
@@ -405,5 +447,43 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         alert.show();
         Log.i("value", value[0]);;
     }
+    public void resetRecords(){
+
+        buttonRecords.clear();
+        accelerometerRecords.clear();
+        comment="";
+        gyroscopeRecords.clear();
+        surface_type ="";
+        orientation_type="";
+
+    }
+
+    public void setDropDown(){
+        sensor_delay = 0;
+        //get the spinner from the xml.
+        Spinner dropdown = findViewById(R.id.spinner1);
+//create a list of items for the spinner.
+        String[] items = new String[]{"SENSOR_DELAY_FASTEST", "SENSOR_DELAY_GAME", "SENSOR_DELAY_NORMAL","SENSOR_DELAY_UI"};
+//create an adapter to describe how the items are displayed, adapters are used in several places in android.
+//There are multiple variations of this, but this is the basic variant.
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+//set the spinners adapter to the previously created one.
+        dropdown.setAdapter(adapter);
+        dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
+                if(id>=2){
+                    id+=1;
+                }
+                sensor_delay = (int) id;
+                Log.d("pressed",String.valueOf(id));
+                Object item = parent.getItemAtPosition(pos);
+            }
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
 }
+
+
 

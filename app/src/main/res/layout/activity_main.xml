@@ -11,11 +11,11 @@
         android:id="@+id/play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="48dp"
         android:onClick="play"
         android:text="play"
         app:layout_constraintEnd_toEndOf="@+id/pause"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/pause"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,9 +23,9 @@
         android:id="@+id/pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="128dp"
-        android:layout_marginRight="128dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginRight="52dp"
         android:onClick="pause"
         android:text="pause"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,6 @@
         android:layout_marginStart="23dp"
         android:layout_marginLeft="23dp"
         android:layout_marginBottom="63dp"
-        android:onClick="buttonClicked"
         android:text="7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -47,7 +46,6 @@
         android:id="@+id/button8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="buttonClicked"
         android:text="8"
         app:layout_constraintBaseline_toBaselineOf="@+id/button9"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +58,6 @@
         android:layout_marginEnd="27dp"
         android:layout_marginRight="27dp"
         android:layout_marginBottom="63dp"
-        android:onClick="buttonClicked"
         android:text="9"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -71,7 +68,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="23dp"
         android:layout_marginLeft="23dp"
-        android:onClick="buttonClicked"
         android:text="1"
         app:layout_constraintBaseline_toBaselineOf="@+id/button2"
         app:layout_constraintStart_toStartOf="parent" />
@@ -81,7 +77,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="257dp"
-        android:onClick="buttonClicked"
         android:text="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +88,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="27dp"
         android:layout_marginRight="27dp"
-        android:onClick="buttonClicked"
         android:text="3"
         app:layout_constraintBaseline_toBaselineOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -104,7 +98,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="23dp"
         android:layout_marginLeft="23dp"
-        android:onClick="buttonClicked"
         android:text="4"
         app:layout_constraintBaseline_toBaselineOf="@+id/button5"
         app:layout_constraintStart_toStartOf="parent" />
@@ -114,7 +107,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
-        android:onClick="buttonClicked"
         android:text="5"
         app:layout_constraintStart_toStartOf="@+id/button2"
         app:layout_constraintTop_toBottomOf="@+id/button2" />
@@ -125,7 +117,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="27dp"
         android:layout_marginRight="27dp"
-        android:onClick="buttonClicked"
         android:text="6"
         app:layout_constraintBaseline_toBaselineOf="@+id/button5"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -153,5 +144,15 @@
         android:text="user name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="202dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="64dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
