@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Trace;
 import android.text.InputType;
 import android.util.Log;
@@ -74,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String[] speed_sensor = {"SENSOR_DELAY_FASTEST","SENSOR_DELAY_GAME","","SENSOR_DELAY_NORMAL","SENSOR_DELAY_UI"};
     String surface_type ="";
     String orientation_type="";
-    Signature[] sigs;
+
     SharedPreferences sharedPreferences;
     String user_name;
-    String ip="54.235.235.226";
+    String ip="54.152.156.242";
     int sensor_delay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Listbutton.add(b7);
         Listbutton.add(b8);
         Listbutton.add(b9);
+
         set();
         setDropDown();
 
@@ -127,14 +129,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         id = System.currentTimeMillis();
         bpause.setVisibility(View.VISIBLE);
         bplay.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, "Clicked on Button", Toast.LENGTH_LONG).show();
+        Long tsLong = System.currentTimeMillis();
+        buttonRecords.add(tsLong +"," +"10");
+        buttonRecords.add(tsLong +"," +"10");
+
+        Toast.makeText(this, "tap ", Toast.LENGTH_LONG).show();
+
         record();
-        // get the signature off the app (used to secure api call as a secret key)
-         sigs = this.getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_SIGNATURES).signatures;
-        for (Signature sig : sigs)
-        {
-            Log.i("MyApp", "Signature hashcode : " + sig.hashCode());
-        }
+
     }
     public void changeIp(View v) throws PackageManager.NameNotFoundException {
         setIp();
@@ -148,9 +150,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void pause(View v) throws IOException, JSONException {
         bpause.setVisibility(View.INVISIBLE);
         bplay.setVisibility(View.VISIBLE);
+
+        Long tsLong = System.currentTimeMillis();
+        buttonRecords.add(tsLong +"," +"10");
+        buttonRecords.add(tsLong +"," +"10");
         sensorManager.unregisterListener(this);
         final CharSequence[] surface_items =  {"soft","hard","hand left","hand right"};
-        final CharSequence[] orientation_items = {"Horizontal","45°"};
+        final CharSequence[] orientation_items = {"Horizontal","45 d"};
         addComment();
         surface(surface_items,"suface");
         orientation(orientation_items,"orientation");
